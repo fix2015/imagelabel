@@ -46,7 +46,7 @@
             <a id="download">Download as image</a>
         </li>
         <li class="list-group-item">
-            <img src="" height="200" alt="Image preview...">
+            <img src="" height="500" alt="Image preview...">
         </li>
     </ul>
 
@@ -120,22 +120,24 @@
         image.crossOrigin = "anonymous";
         image.onload = function(data) {
             var canvas = ctx.canvas ;
-            var hRatio = canvas.width  / canvasOrigin.width    ;
-            var vRatio =  canvas.height / canvasOrigin.height  ;
+            var hRatio = image.width  / canvasOrigin.width    ;
+            var vRatio =  image.height / canvasOrigin.height  ;
             var ratio  = Math.min ( hRatio, vRatio );
-            var centerShift_x = ( canvas.width - canvasOrigin.width*ratio ) / 2;
-            var centerShift_y = ( canvas.height - canvasOrigin.height*ratio ) / 2;
+            var centerShift_x = ( image.width - canvasOrigin.width*ratio ) / 2 * 1.2;
+            var centerShift_y = ( image.height - canvasOrigin.height*ratio ) / 2 * 1.2;
 
-            ctx.drawImage(image, -100, -100, canvasOrigin.width, canvasOrigin.height,
-                centerShift_x,centerShift_y,canvasOrigin.width*ratio/4 , canvasOrigin.height*ratio/4);
+            ctx.drawImage(image, 0, 0,
+                canvasOrigin.width, canvasOrigin.height,
+                !centerShift_x ? 10 : centerShift_x,centerShift_y,
+                canvasOrigin.width*ratio/4 , canvasOrigin.height*ratio/4);
 
             ctx.font = "36px Comic Sans MS";
             ctx.fillStyle = "red";
             ctx.textAlign = "center";
 
             ctx.fillText(labelText,
-                centerShift_x + canvasOrigin.width*ratio-labelText.length*10,
-                centerShift_y + canvasOrigin.height*ratio-20);
+                (canvasOrigin.height*ratio + (canvas.height - canvasOrigin.height*ratio)/2),
+                (canvasOrigin.height*ratio + (canvas.height - canvasOrigin.height*ratio)/2));
 
             convertCanvasToImage(canvas);
         };
