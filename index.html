@@ -127,9 +127,9 @@
             var ratio  = Math.min ( hRatio, vRatio );
 
             ctx.drawImage(image, 0, 0,
-                canvasOrigin.width, canvasOrigin.height,
+                canvasOrigin.width*ratio*3, canvasOrigin.height*ratio*3,
                 10,10,
-                canvasOrigin.width * (canvasOrigin.width > 3000 ? 1 : ratio) /4 , canvasOrigin.height * (canvasOrigin.width > 3000 ? 1 : ratio) /4);
+                canvasOrigin.width* (canvasOrigin.width > 3000 ? 1 : ratio) /3 , canvasOrigin.height * (canvasOrigin.width > 3000 ? 1 : ratio) /3);
 
             ctx.font = "36px Comic Sans MS";
             ctx.fillStyle = "red";
