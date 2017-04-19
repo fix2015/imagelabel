@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image label</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style>
+        .full-width {
+            display:block;
+        }
+        .image-label .form-group{
+            margin-left: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Image Label</h2>
+    <ul class="list-group image-label">
+        <li class="list-group-item">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="full-width">Label Image:</label>
+                    <input type="text" id="labelImage" value="https://pp.userapi.com/c636019/v636019349/d413/uZilv97vZDM.jpg">
+                </div>
+                <div class="form-group">
+                    <label class="full-width">Label Text:</label>
+                    <input type="text" id="labelText" value="https://vk.com/gport">
+                </div>
+                <div class="form-group">
+                    <label class="full-width">Width:</label>
+                    <input type="text" id="widthOfImage" value="900">
+                </div>
+                <div class="form-group">
+                    <label class="full-width">Height:</label>
+                    <input type="text" id="heightOfImage" value="900">
+                </div>
+            </form>
+        </li>
+        <li class="list-group-item">
+            <label class="control-label">Select File</label>
+            <input type="file" class="file-loading" onchange="previewFile()"><br>
+        </li>
+        <li class="list-group-item">
+            <a id="download">Download as image</a>
+        </li>
+        <li class="list-group-item">
+            <img src="" height="200" alt="Image preview...">
+        </li>
+    </ul>
+
+
+</div>
+<script>
+    var canvas = create_canvas();
+    var canvasWithImage;
+    var labelText = document.getElementById('labelText').value;
+    var labelImage = document.getElementById('labelImage').value;
+    var widthOfImage = document.getElementById('widthOfImage').value;
+    var heightOfImage = document.getElementById('heightOfImage').value;
+
+    function previewFile(){
+        var file    = document.querySelector('input[type=file]').files[0]; //sames as here
+        var reader  = new FileReader();
+        reader.onloadend = function () {
+            labelText = document.getElementById('labelText').value;
+            labelImage = document.getElementById('labelImage').value;
+            widthOfImage = document.getElementById('widthOfImage').value;
+            heightOfImage = document.getElementById('heightOfImage').value;
+            loadImage(reader.result);
+        }
+        if (file) { reader.readAsDataURL(file);}
+    }
+    function create_canvas() {
+        var canvas = document.createElement('canvas');
+//        document.body.appendChild(canvas);
+        return canvas;
+    }
+    function loadImage(url) {
+        var image = new Image();
+        image.crossOrigin = "anonymous";
+        image.onload = function(data) {
+            var width = image.width;
+            var height = image.height;
+            canvas.width = width;
+            canvas.height = height;
+
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(image, 0, 0);
+            change_size(canvas);
+
+        };
+        image.src = url;
+    }
+    function change_size(canvasOrigin){
+        canvasWithImage = document.createElement('canvas');
+        canvasWithImage.width = widthOfImage;
+        canvasWithImage.height = heightOfImage;
+//        document.body.appendChild(canva);
+        var ctx = canvasWithImage.getContext('2d');
+        scale(canvasOrigin, ctx);
+    }
+
+    function scale(canvasOrigin, ctx) {
+        var canvas = ctx.canvas ;
+        var hRatio = canvas.width  / canvasOrigin.width    ;
+        var vRatio =  canvas.height / canvasOrigin.height  ;
+        var ratio  = Math.min ( hRatio, vRatio );
+        var centerShift_x = ( canvas.width - canvasOrigin.width*ratio ) / 2;
+        var centerShift_y = ( canvas.height - canvasOrigin.height*ratio ) / 2;
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        ctx.drawImage(canvasOrigin, 0,0, canvasOrigin.width, canvasOrigin.height,
+            centerShift_x,centerShift_y,canvasOrigin.width*ratio, canvasOrigin.height*ratio);
+        put_label(canvasOrigin, ctx);
+    }
+
+    function put_label(canvasOrigin, ctx){
+        var image = new Image();
+        image.crossOrigin = "anonymous";
+        image.onload = function(data) {
+            var canvas = ctx.canvas ;
+            var hRatio = canvas.width  / canvasOrigin.width    ;
+            var vRatio =  canvas.height / canvasOrigin.height  ;
+            var ratio  = Math.min ( hRatio, vRatio );
+            var centerShift_x = ( canvas.width - canvasOrigin.width*ratio ) / 2;
+            var centerShift_y = ( canvas.height - canvasOrigin.height*ratio ) / 2;
+
+            ctx.drawImage(image, -100, -100, canvasOrigin.width, canvasOrigin.height,
+                centerShift_x,centerShift_y,canvasOrigin.width*ratio/4 , canvasOrigin.height*ratio/4);
+
+            ctx.font = "36px Comic Sans MS";
+            ctx.fillStyle = "red";
+            ctx.textAlign = "center";
+
+            ctx.fillText(labelText,
+                centerShift_x + canvasOrigin.width*ratio-labelText.length*10,
+                centerShift_y + canvasOrigin.height*ratio-20);
+
+            convertCanvasToImage(canvas);
+        };
+        image.src = labelImage;
+    }
+
+    function convertCanvasToImage(canvas) {
+        var preview = document.querySelector('img'); //selects the query named img
+        preview.src = canvas.toDataURL("image/png");
+        return ;
+    }
+
+    function downloadCanvas(link, canvasId, filename) {
+        link.href = canvasWithImage.toDataURL();
+        link.download = filename;
+    }
+
+    document.getElementById('download').addEventListener('click', function() {
+        downloadCanvas(this, 'canvas', 'test.png');
+    }, false);
+
+    previewFile();
+</script>
+</body>
+</html>
