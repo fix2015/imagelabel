@@ -28,14 +28,6 @@
                     <label class="full-width">Label Text:</label>
                     <input type="text" id="labelText" value="https://vk.com/gport">
                 </div>
-                <div class="form-group">
-                    <label class="full-width">Width:</label>
-                    <input type="text" id="widthOfImage" value="900">
-                </div>
-                <div class="form-group">
-                    <label class="full-width">Height:</label>
-                    <input type="text" id="heightOfImage" value="900">
-                </div>
             </form>
         </li>
         <li class="list-group-item">
@@ -46,7 +38,7 @@
             <a id="download">Download as image</a>
         </li>
         <li class="list-group-item">
-            <img src="" height="200" alt="Image preview...">
+            <img src="" height="500" alt="Image preview...">
         </li>
     </ul>
 
@@ -57,8 +49,8 @@
     var canvasWithImage;
     var labelText = document.getElementById('labelText').value;
     var labelImage = document.getElementById('labelImage').value;
-    var widthOfImage = document.getElementById('widthOfImage').value;
-    var heightOfImage = document.getElementById('heightOfImage').value;
+    var widthOfImage = 0;
+    var heightOfImage = 0;
 
     function previewFile(){
         var file    = document.querySelector('input[type=file]').files[0]; //sames as here
@@ -66,8 +58,6 @@
         reader.onloadend = function () {
             labelText = document.getElementById('labelText').value;
             labelImage = document.getElementById('labelImage').value;
-            widthOfImage = document.getElementById('widthOfImage').value;
-            heightOfImage = document.getElementById('heightOfImage').value;
             loadImage(reader.result);
         }
         if (file) { reader.readAsDataURL(file);}
@@ -83,6 +73,8 @@
         image.onload = function(data) {
             var width = image.width;
             var height = image.height;
+            widthOfImage = width;
+            heightOfImage = height;
             canvas.width = width;
             canvas.height = height;
 
@@ -120,22 +112,22 @@
         image.crossOrigin = "anonymous";
         image.onload = function(data) {
             var canvas = ctx.canvas ;
-            var hRatio = canvas.width  / canvasOrigin.width    ;
-            var vRatio =  canvas.height / canvasOrigin.height  ;
+            var hRatio = image.width  / canvasOrigin.width    ;
+            var vRatio =  image.height / canvasOrigin.height  ;
             var ratio  = Math.min ( hRatio, vRatio );
-            var centerShift_x = ( canvas.width - canvasOrigin.width*ratio ) / 2;
-            var centerShift_y = ( canvas.height - canvasOrigin.height*ratio ) / 2;
 
-            ctx.drawImage(image, -100, -100, canvasOrigin.width, canvasOrigin.height,
-                centerShift_x,centerShift_y,canvasOrigin.width*ratio/4 , canvasOrigin.height*ratio/4);
+            ctx.drawImage(image, 0, 0,
+                canvasOrigin.width*ratio*3, canvasOrigin.height*ratio*3,
+                10,10,
+                canvasOrigin.width* (canvasOrigin.width > 3000 ? 1 : ratio) /3 , canvasOrigin.height * (canvasOrigin.width > 3000 ? 1 : ratio) /3);
 
             ctx.font = "36px Comic Sans MS";
             ctx.fillStyle = "red";
             ctx.textAlign = "center";
 
             ctx.fillText(labelText,
-                centerShift_x + canvasOrigin.width*ratio-labelText.length*10,
-                centerShift_y + canvasOrigin.height*ratio-20);
+                canvasOrigin.width-labelImage.length*3,
+                canvasOrigin.height-10);
 
             convertCanvasToImage(canvas);
         };
