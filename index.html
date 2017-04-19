@@ -83,6 +83,8 @@
         image.onload = function(data) {
             var width = image.width;
             var height = image.height;
+            widthOfImage = width;
+            heightOfImage = height;
             canvas.width = width;
             canvas.height = height;
 
@@ -123,21 +125,19 @@
             var hRatio = image.width  / canvasOrigin.width    ;
             var vRatio =  image.height / canvasOrigin.height  ;
             var ratio  = Math.min ( hRatio, vRatio );
-            var centerShift_x = ( image.width - canvasOrigin.width*ratio ) / 2 * 1.2;
-            var centerShift_y = ( image.height - canvasOrigin.height*ratio ) / 2 * 1.2;
 
             ctx.drawImage(image, 0, 0,
                 canvasOrigin.width, canvasOrigin.height,
-                !centerShift_x ? 10 : centerShift_x,centerShift_y,
-                canvasOrigin.width*ratio/4 , canvasOrigin.height*ratio/4);
+                10,10,
+                canvasOrigin.width * (canvasOrigin.width > 3000 ? 1 : ratio) /4 , canvasOrigin.height * (canvasOrigin.width > 3000 ? 1 : ratio) /4);
 
             ctx.font = "36px Comic Sans MS";
             ctx.fillStyle = "red";
             ctx.textAlign = "center";
 
             ctx.fillText(labelText,
-                (canvasOrigin.width*ratio + (canvas.width - canvasOrigin.width*ratio)/2)-labelImage.length*2.5,
-                (canvasOrigin.height*ratio + (canvas.height - canvasOrigin.height*ratio)/2));
+                canvasOrigin.width-labelImage.length*3,
+                canvasOrigin.height-10);
 
             convertCanvasToImage(canvas);
         };
