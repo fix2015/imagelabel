@@ -28,14 +28,6 @@
                     <label class="full-width">Label Text:</label>
                     <input type="text" id="labelText" value="https://vk.com/gport">
                 </div>
-                <div class="form-group">
-                    <label class="full-width">Width:</label>
-                    <input type="text" id="widthOfImage" value="900">
-                </div>
-                <div class="form-group">
-                    <label class="full-width">Height:</label>
-                    <input type="text" id="heightOfImage" value="900">
-                </div>
             </form>
         </li>
         <li class="list-group-item">
@@ -57,8 +49,8 @@
     var canvasWithImage;
     var labelText = document.getElementById('labelText').value;
     var labelImage = document.getElementById('labelImage').value;
-    var widthOfImage = document.getElementById('widthOfImage').value;
-    var heightOfImage = document.getElementById('heightOfImage').value;
+    var widthOfImage = 0;
+    var heightOfImage = 0;
 
     function previewFile(){
         var file    = document.querySelector('input[type=file]').files[0]; //sames as here
@@ -66,8 +58,6 @@
         reader.onloadend = function () {
             labelText = document.getElementById('labelText').value;
             labelImage = document.getElementById('labelImage').value;
-            widthOfImage = document.getElementById('widthOfImage').value;
-            heightOfImage = document.getElementById('heightOfImage').value;
             loadImage(reader.result);
         }
         if (file) { reader.readAsDataURL(file);}
