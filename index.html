@@ -173,6 +173,7 @@
                 LabelText.setAttribute("type", "text");
                 LabelText.setAttribute("id", "labelImage");
                 LabelText.value = 'https://pp.userapi.com/c636019/v636019349/d413/uZilv97vZDM.jpg';
+                LabelText.onkeypress = this._changeLabelImagePosition.bind(this);
 
             DivLabelImage.appendChild(this._createLabel('Label Image:'));
             DivLabelImage.appendChild(LabelText);
@@ -184,6 +185,8 @@
                 LabelText.setAttribute("type", "text");
                 LabelText.setAttribute("id", "labelText");
                 LabelText.value = 'https://vk.com/gport';
+                LabelText.onkeypress = this._changeLabelImagePosition.bind(this);
+
 
             DivLabelText.appendChild(this._createLabel('Label Text:'));
             DivLabelText.appendChild(LabelText);
@@ -344,9 +347,11 @@
             }.bind(this), false);
         }
         function changeLabelImagePosition() {
-            this._imageLabelHor = document.getElementById('imageLabelHor').value;
-            this._imageLabelVer = document.getElementById('imageLabelVer').value;
+            this._imageLabelHor  = document.getElementById('imageLabelHor').value;
+            this._imageLabelVer  = document.getElementById('imageLabelVer').value;
             this._imageLabelSize = document.getElementById('imageLabelsize').value;
+            this._labelText      = document.getElementById('labelText').value;
+            console.log(this._labelText)
         }
     }
     var image = new imageWaterLabel('main');
