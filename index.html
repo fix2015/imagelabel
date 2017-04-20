@@ -35,12 +35,12 @@
         this._labelImage;
         this._ctx;
         this._elements;
-        this._widthOfImage = 0;
-        this._heightOfImage = 0;
-        this._imageLabelHor = 10;
-        this._imageLabelVer = 10;
-        this._imageLabelSize = 3;
-        this._heightOfImage = 0;
+        this._widthOfImage;
+        this._heightOfImage;
+        this._imageLabelHor;
+        this._imageLabelVer;
+        this._imageLabelSize;
+        this._heightOfImage;
         this._updateImage = updateImage;
         this._drawImage = drawImage;
 
@@ -109,8 +109,8 @@
             var elemPosHor =  document.createElement('INPUT');
                 elemPosHor.setAttribute("type", "range");
                 elemPosHor.setAttribute("min", "0");
-                elemPosHor.setAttribute("max", "1000");
-                elemPosHor.setAttribute("step", "0.5");
+                elemPosHor.setAttribute("max", "1200");
+                elemPosHor.setAttribute("step", "25");
                 elemPosHor.setAttribute("id", "imageLabelHor");
                 elemPosHor.setAttribute("value", this._imageLabelHor);
                 elemPosHor.oninput = this._changeLabelImagePosition.bind(this);
@@ -119,8 +119,8 @@
             var elemPosVer =  document.createElement('INPUT');
                 elemPosVer.setAttribute("type", "range");
                 elemPosVer.setAttribute("min", "0");
-                elemPosVer.setAttribute("max", "1000");
-                elemPosVer.setAttribute("step", "0.5");
+                elemPosVer.setAttribute("max", "1200");
+                elemPosVer.setAttribute("step", "25");
                 elemPosVer.setAttribute("id", "imageLabelVer");
                 elemPosVer.setAttribute("value",this._imageLabelVer);
                 elemPosVer.oninput = this._changeLabelImagePosition.bind(this);
@@ -128,8 +128,8 @@
 
             var elemPosSize =  document.createElement('INPUT');
                 elemPosSize.setAttribute("type", "range");
-                elemPosSize.setAttribute("min", "3");
-                elemPosSize.setAttribute("max", "4");
+                elemPosSize.setAttribute("min", "0");
+                elemPosSize.setAttribute("max", "6");
                 elemPosSize.setAttribute("step", "0.1");
                 elemPosSize.setAttribute("id", "imageLabelsize");
                 elemPosSize.setAttribute("value", this._imageLabelSize);
@@ -137,9 +137,9 @@
                 elemPosSize.onchange = this._changeLabelImagePosition.bind(this);
 
             elem.appendChild(this._createLabel('Position of Label Image:'));
-            elem.appendChild(this._createLabel('Vertical:'));
-            elem.appendChild(elemPosHor);
             elem.appendChild(this._createLabel('Horizontal:'));
+            elem.appendChild(elemPosHor);
+            elem.appendChild(this._createLabel('Vertical:'));
             elem.appendChild(elemPosVer);
             elem.appendChild(this._createLabel('Size:'));
             elem.appendChild(elemPosSize);
@@ -236,7 +236,7 @@
             this._heightOfImage = 0;
             this._imageLabelHor = 10;
             this._imageLabelVer = 10;
-            this._imageLabelSize = 3;
+            this._imageLabelSize = 2;
             this._heightOfImage = 0;
             document.getElementById('imageLabelHor').value = this._imageLabelHor;
             document.getElementById('imageLabelVer').value = this._imageLabelVer;
@@ -309,7 +309,7 @@
                 ctx.drawImage(image, 0, 0,
                     canvasOrigin.width*ratio*(5-this._imageLabelSize), canvasOrigin.height*ratio*(5-this._imageLabelSize),
                     this._imageLabelHor, this._imageLabelVer,
-                    canvasOrigin.width* (canvasOrigin.width > 3000 ? 1 : ratio) /this._imageLabelSize , canvasOrigin.height * (canvasOrigin.width > 3000 ? 1 : ratio) /this._imageLabelSize);
+                    canvasOrigin.width* (canvasOrigin.width > 3000 ? 1 : ratio) /(5-this._imageLabelSize) , canvasOrigin.height * (canvasOrigin.width > 3000 ? 1 : ratio) /(5-this._imageLabelSize));
 
                 ctx.font = canvasOrigin.height/15 + "px Comic Sans MS";
                 ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
