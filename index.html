@@ -16,6 +16,10 @@
             width: 100%;
             height: 100%;
         }
+        #preview canvas{
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -28,6 +32,7 @@
     function imageWaterLabel(selectorId) {
         this._selectorId = selectorId;
 
+        this._imageLabel;
         this._canvas;
         this._canvasWithImage;
         this._ctxImage;
@@ -41,9 +46,10 @@
         this._imageLabelVer;
         this._imageLabelSize;
         this._heightOfImage;
+        this._listenerDownload;
+
         this._updateImage = updateImage;
         this._drawImage = drawImage;
-
         this._init = init;
         this._loadImage = loadImage;
         this._create_canvas = create_canvas;
@@ -64,6 +70,8 @@
         this._createLabel = createLabel;
         this._addElementToDom = addElementToDom;
         this._removeElementToDom = removeElementToDom;
+        this._load_label_img = load_label_img;
+        this._destroy = destroy;
         this._init();
 
         function init() {
@@ -78,6 +86,9 @@
 
             this._removeElementToDom();
             this._addElementToDom();
+            this._destroy();
+            this._addEventListener();
+
         }
 
         function removeElementToDom() {
@@ -212,7 +223,7 @@
         }
 
         function createImagePreviewForm() {
-            var elem =  document.createElement('img');
+            var elem =  document.createElement('div');
                 elem.setAttribute('id', 'preview');
 
             return elem;
@@ -229,6 +240,7 @@
         function create_canvas() {
             var canvas = document.createElement('canvas');
             //document.body.appendChild(canvas);
+
             return canvas;
         }
 
@@ -293,65 +305,82 @@
             ctx.clearRect(0,0,canvas.width, canvas.height);
             ctx.drawImage(canvasOrigin, 0,0, canvasOrigin.width, canvasOrigin.height,
                 centerShift_x,centerShift_y,canvasOrigin.width*ratio, canvasOrigin.height*ratio);
-            this._put_label();
+            this._load_label_img();
         }
 
-        function put_label(){
+        function load_label_img(){
+            if(this._imageLabel){
+                this._put_label();
+                return ;
+            }
+            this._imageLabel = new Image();
+            this._imageLabel .crossOrigin = "anonymous";
+            this._imageLabel .onload = function(data) {
+                this._put_label();
+            }.bind(this);
+            this._imageLabel .src = this._labelImage;
+        }
+        function put_label() {
             var canvasOrigin = this._canvas
             var ctx = this._ctxImage;
-            var image = new Image();
-            image.crossOrigin = "anonymous";
-            image.onload = function(data) {
-                var canvas = ctx.canvas ;
-                var hRatio = canvasOrigin.width  / image.width;
-                var vRatio = canvasOrigin.height / image.height;
-                var ratio  = Math.min ( hRatio, vRatio );
+            var canvas = ctx.canvas ;
+            var hRatio = canvasOrigin.width  / this._imageLabel.width;
+            var vRatio = canvasOrigin.height / this._imageLabel.height;
+            var ratio  = Math.min ( hRatio, vRatio );
 
-                if(ratio>2.5) ratio = ratio/10;
+            if(ratio>2.5) ratio = ratio/10;
 
-                ctx.drawImage(image, 0, 0,
+            ctx.drawImage(this._imageLabel, 0, 0,
                     canvasOrigin.width*ratio*(5-this._imageLabelSize), canvasOrigin.height*ratio*(5-this._imageLabelSize),
                     this._imageLabelHor, this._imageLabelVer,
                     canvasOrigin.width* (canvasOrigin.width > 3000 ? 1 : ratio) /(5-this._imageLabelSize) , canvasOrigin.height * (canvasOrigin.width > 3000 ? 1 : ratio) /(5-this._imageLabelSize));
 
-                ctx.font = canvasOrigin.height/15 + "px Comic Sans MS";
-                ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
-                ctx.textAlign = "center";
+            ctx.font = canvasOrigin.height/15 + "px Comic Sans MS";
+            ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
+            ctx.textAlign = "center";
 
-                ctx.fillText(this._labelText,
+            ctx.fillText(this._labelText,
                     canvasOrigin.width/2,
                     canvasOrigin.height/2);
 
-                this._convertCanvasToImage(canvas);
-            }.bind(this);
-            image.src = this._labelImage;
+            this._convertCanvasToImage(canvas);
         }
 
         function convertCanvasToImage(canvas) {
-//            document.getElementById('preview').appendChild(this._canvasWithImage);
-            var preview = document.querySelector('#preview');
-                preview.src = canvas.toDataURL("image/png");
+            document.getElementById('preview').innerHTML = '';
+            document.getElementById('preview').appendChild(canvas);
+
             requestAnimationFrame(this._drawImage.bind(this));
 
             return ;
         }
 
-        function downloadCanvas(link, canvasId, filename) {
+        function downloadCanvas(link, filename) {
             link.href = this._canvasWithImage.toDataURL();
             link.download = filename;
+//            downloadURI(link.href , filename)
+
+        }
+        function downloadURI(uri, name) {
+            var link = document.createElement('a');
+            link.download = name;
+            link.href = uri;
+        }
+        function destroy() {
+            this._listenerDownload = null;
         }
 
         function addEventListener() {
-            document.getElementById('download').addEventListener('click', function() {
-                this._downloadCanvas(this, 'canvas', 'test.png');
-            }.bind(this), false);
+            var self = this;
+            this._listenerDownload = document.getElementById('download').addEventListener('click', function() {
+                self._downloadCanvas(this, 'test.png');
+            }, false);
         }
         function changeLabelImagePosition() {
             this._imageLabelHor  = document.getElementById('imageLabelHor').value;
             this._imageLabelVer  = document.getElementById('imageLabelVer').value;
             this._imageLabelSize = document.getElementById('imageLabelsize').value;
             this._labelText      = document.getElementById('labelText').value;
-            console.log(this._labelText)
         }
     }
     var image = new imageWaterLabel('main');
