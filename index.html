@@ -12,6 +12,10 @@
         .image-label .form-group{
             margin-left: 0;
         }
+        img{
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -22,6 +26,8 @@
 <script>
 
     function imageWaterLabel(selectorId) {
+        this._selectorId = selectorId;
+
         this._canvas;
         this._canvasWithImage;
         this._ctxImage;
@@ -30,6 +36,10 @@
         this._ctx;
         this._elements;
         this._widthOfImage = 0;
+        this._heightOfImage = 0;
+        this._imageLabelHor = 10;
+        this._imageLabelVer = 10;
+        this._imageLabelSize = 3;
         this._heightOfImage = 0;
         this._updateImage = updateImage;
         this._drawImage = drawImage;
@@ -49,24 +59,92 @@
         this._createSelectionForm = createSelectionForm;
         this._createListForForm = createListForForm;
         this._appentToLi = appentToLi;
-        this._init(selectorId);
+        this._changeLabelImagePosition = changeLabelImagePosition;
+        this._createRange = createRange;
+        this._createLabel = createLabel;
+        this._addElementToDom = addElementToDom;
+        this._removeElementToDom = removeElementToDom;
+        this._init();
 
-        function init(selectorId) {
+        function init() {
             this._canvas = this._create_canvas();
             this._elements = {
                 createMainForm: this._createMainForm(),
                 createImagePreviewForm: this._createImagePreviewForm(),
                 createSelectionForm: this._createSelectionForm(),
                 downloadImage: this._downloadImage(),
+                createRange: this._createRange(),
             };
+
+            this._removeElementToDom();
+            this._addElementToDom();
+        }
+
+        function removeElementToDom() {
+            document.getElementById(this._selectorId).innerHTML = '';
+        }
+
+        function addElementToDom() {
             var list = this._createListForForm();
+                list.appendChild(this._appentToLi(this._elements.createMainForm));
+                list.appendChild(this._appentToLi(this._elements.createRange));
+                list.appendChild(this._appentToLi(this._elements.createSelectionForm));
+                list.appendChild(this._appentToLi(this._elements.downloadImage));
+                list.appendChild(this._appentToLi(this._elements.createImagePreviewForm));
 
-            list.appendChild(this._appentToLi(this._elements.createMainForm));
-            list.appendChild(this._appentToLi(this._elements.createSelectionForm));
-            list.appendChild(this._appentToLi(this._elements.downloadImage));
-            list.appendChild(this._appentToLi(this._elements.createImagePreviewForm));
+            document.getElementById(this._selectorId).appendChild(list);
 
-            document.getElementById(selectorId).appendChild(list);
+            return list;
+        }
+
+        function createLabel(name) {
+            var label = document.createElement('label');
+                label.classList.add("full-width")
+                label.innerHTML = name;
+            return label
+        }
+
+        function createRange() {
+            var elem =  document.createElement('div');
+            var elemPosHor =  document.createElement('INPUT');
+                elemPosHor.setAttribute("type", "range");
+                elemPosHor.setAttribute("min", "0");
+                elemPosHor.setAttribute("max", "1000");
+                elemPosHor.setAttribute("step", "0.5");
+                elemPosHor.setAttribute("id", "imageLabelHor");
+                elemPosHor.setAttribute("value", this._imageLabelHor);
+                elemPosHor.oninput = this._changeLabelImagePosition.bind(this);
+                elemPosHor.onchange = this._changeLabelImagePosition.bind(this);
+
+            var elemPosVer =  document.createElement('INPUT');
+                elemPosVer.setAttribute("type", "range");
+                elemPosVer.setAttribute("min", "0");
+                elemPosVer.setAttribute("max", "1000");
+                elemPosVer.setAttribute("step", "0.5");
+                elemPosVer.setAttribute("id", "imageLabelVer");
+                elemPosVer.setAttribute("value",this._imageLabelVer);
+                elemPosVer.oninput = this._changeLabelImagePosition.bind(this);
+                elemPosVer.onchange = this._changeLabelImagePosition.bind(this);
+
+            var elemPosSize =  document.createElement('INPUT');
+                elemPosSize.setAttribute("type", "range");
+                elemPosSize.setAttribute("min", "3");
+                elemPosSize.setAttribute("max", "4");
+                elemPosSize.setAttribute("step", "0.1");
+                elemPosSize.setAttribute("id", "imageLabelsize");
+                elemPosSize.setAttribute("value", this._imageLabelSize);
+                elemPosSize.oninput = this._changeLabelImagePosition.bind(this);
+                elemPosSize.onchange = this._changeLabelImagePosition.bind(this);
+
+            elem.appendChild(this._createLabel('Position of Label Image:'));
+            elem.appendChild(this._createLabel('Vertical:'));
+            elem.appendChild(elemPosHor);
+            elem.appendChild(this._createLabel('Horizontal:'));
+            elem.appendChild(elemPosVer);
+            elem.appendChild(this._createLabel('Size:'));
+            elem.appendChild(elemPosSize);
+
+            return elem;
         }
 
         function createListForForm() {
@@ -91,31 +169,23 @@
             var DivLabelImage = document.createElement('div');
                 DivLabelImage.classList.add("form-group");
 
-            var LabelImage = document.createElement('label');
-                LabelImage.classList.add("full-width")
-                LabelImage.innerHTML = 'Label Image:';
-
             var LabelText = document.createElement('INPUT');
                 LabelText.setAttribute("type", "text");
                 LabelText.setAttribute("id", "labelImage");
                 LabelText.value = 'https://pp.userapi.com/c636019/v636019349/d413/uZilv97vZDM.jpg';
 
-            DivLabelImage.appendChild(LabelImage);
+            DivLabelImage.appendChild(this._createLabel('Label Image:'));
             DivLabelImage.appendChild(LabelText);
 
             var DivLabelText = document.createElement('div');
                 DivLabelText.classList.add("form-group");
-
-            var LabelImage = document.createElement('label');
-                LabelImage.classList.add("full-width")
-                LabelImage.innerHTML = 'Label Text:';
 
             var LabelText = document.createElement('INPUT');
                 LabelText.setAttribute("type", "text");
                 LabelText.setAttribute("id", "labelText");
                 LabelText.value = 'https://vk.com/gport';
 
-            DivLabelText.appendChild(LabelImage);
+            DivLabelText.appendChild(this._createLabel('Label Text:'));
             DivLabelText.appendChild(LabelText);
 
             elem.classList.add("form-horizontal");
@@ -127,17 +197,12 @@
 
         function createSelectionForm() {
             var elem =  document.createElement('div');
-
-            var Label = document.createElement('label');
-            Label.classList.add("control-label")
-            Label.innerHTML = 'Select File:';
-
             var ElementFile = document.createElement('INPUT');
-            ElementFile.setAttribute("type", "file");
-            ElementFile.classList.add('file-loading');
-            ElementFile.onchange = this._updateImage.bind(this);
+                ElementFile.setAttribute("type", "file");
+                ElementFile.classList.add('file-loading');
+                ElementFile.onchange = this._updateImage.bind(this);
 
-            elem.appendChild(Label);
+            elem.appendChild(this._createLabel('Select File:'));
             elem.appendChild(ElementFile);
 
             return elem;
@@ -145,7 +210,7 @@
 
         function createImagePreviewForm() {
             var elem =  document.createElement('img');
-                elem.setAttribute('height', '500');
+                elem.setAttribute('id', 'preview');
 
             return elem;
         }
@@ -167,6 +232,15 @@
         function updateData(){
             this._labelText  = document.getElementById('labelText').value;
             this._labelImage = document.getElementById('labelImage').value;
+            this._widthOfImage = 0;
+            this._heightOfImage = 0;
+            this._imageLabelHor = 10;
+            this._imageLabelVer = 10;
+            this._imageLabelSize = 3;
+            this._heightOfImage = 0;
+            document.getElementById('imageLabelHor').value = this._imageLabelHor;
+            document.getElementById('imageLabelVer').value = this._imageLabelVer;
+            document.getElementById('imageLabelsize').value = this._imageLabelSize;
         }
 
         function updateImage(){
@@ -199,12 +273,13 @@
             this._canvasWithImage = document.createElement('canvas');
             this._canvasWithImage.width = this._widthOfImage;
             this._canvasWithImage.height = this._heightOfImage;
-            //document.body.appendChild(canva);
             this._ctxImage = this._canvasWithImage.getContext('2d');
-            this._drawImage(canvasOrigin, this._ctxImage);
+            this._drawImage();
         }
 
-        function drawImage(canvasOrigin, ctx) {
+        function drawImage() {
+            var canvasOrigin = this._canvas
+            var ctx = this._ctxImage;
             var canvas = ctx.canvas ;
             var hRatio = canvas.width  / canvasOrigin.width    ;
             var vRatio =  canvas.height / canvasOrigin.height  ;
@@ -215,23 +290,26 @@
             ctx.clearRect(0,0,canvas.width, canvas.height);
             ctx.drawImage(canvasOrigin, 0,0, canvasOrigin.width, canvasOrigin.height,
                 centerShift_x,centerShift_y,canvasOrigin.width*ratio, canvasOrigin.height*ratio);
-            this._put_label(canvasOrigin, ctx);
+            this._put_label();
         }
 
-        function put_label(canvasOrigin, ctx){
+        function put_label(){
+            var canvasOrigin = this._canvas
+            var ctx = this._ctxImage;
             var image = new Image();
             image.crossOrigin = "anonymous";
             image.onload = function(data) {
                 var canvas = ctx.canvas ;
-                var hRatio = canvasOrigin.width  / image.width    ;
-                var vRatio = canvasOrigin.height / image.height  ;
+                var hRatio = canvasOrigin.width  / image.width;
+                var vRatio = canvasOrigin.height / image.height;
                 var ratio  = Math.min ( hRatio, vRatio );
-                if(ratio>2.5) ratio=ratio / 10
+
+                if(ratio>2.5) ratio = ratio/10;
 
                 ctx.drawImage(image, 0, 0,
-                    canvasOrigin.width*ratio*3, canvasOrigin.height*ratio*3,
-                    10,10,
-                    canvasOrigin.width* (canvasOrigin.width > 3000 ? 1 : ratio) /3 , canvasOrigin.height * (canvasOrigin.width > 3000 ? 1 : ratio) /3);
+                    canvasOrigin.width*ratio*(5-this._imageLabelSize), canvasOrigin.height*ratio*(5-this._imageLabelSize),
+                    this._imageLabelHor, this._imageLabelVer,
+                    canvasOrigin.width* (canvasOrigin.width > 3000 ? 1 : ratio) /this._imageLabelSize , canvasOrigin.height * (canvasOrigin.width > 3000 ? 1 : ratio) /this._imageLabelSize);
 
                 ctx.font = canvasOrigin.height/15 + "px Comic Sans MS";
                 ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
@@ -247,8 +325,11 @@
         }
 
         function convertCanvasToImage(canvas) {
-            var preview = document.querySelector('img'); //selects the query named img
-            preview.src = canvas.toDataURL("image/png");
+//            document.getElementById('preview').appendChild(this._canvasWithImage);
+            var preview = document.querySelector('#preview');
+                preview.src = canvas.toDataURL("image/png");
+            requestAnimationFrame(this._drawImage.bind(this));
+
             return ;
         }
 
@@ -261,6 +342,11 @@
             document.getElementById('download').addEventListener('click', function() {
                 this._downloadCanvas(this, 'canvas', 'test.png');
             }.bind(this), false);
+        }
+        function changeLabelImagePosition() {
+            this._imageLabelHor = document.getElementById('imageLabelHor').value;
+            this._imageLabelVer = document.getElementById('imageLabelVer').value;
+            this._imageLabelSize = document.getElementById('imageLabelsize').value;
         }
     }
     var image = new imageWaterLabel('main');
