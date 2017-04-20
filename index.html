@@ -233,12 +233,12 @@
                     canvasOrigin.width* (canvasOrigin.width > 3000 ? 1 : ratio) /3 , canvasOrigin.height * (canvasOrigin.width > 3000 ? 1 : ratio) /3);
 
                 ctx.font = "36px Comic Sans MS";
-                ctx.fillStyle = "red";
+                ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
                 ctx.textAlign = "center";
 
                 ctx.fillText(this._labelText,
-                    canvasOrigin.width-this._labelImage.length*3,
-                    canvasOrigin.height-10);
+                    canvasOrigin.width/2,
+                    canvasOrigin.height/2);
 
                 this._convertCanvasToImage(canvas);
             }.bind(this);
