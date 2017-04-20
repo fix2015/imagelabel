@@ -223,16 +223,17 @@
             image.crossOrigin = "anonymous";
             image.onload = function(data) {
                 var canvas = ctx.canvas ;
-                var hRatio = image.width  / canvasOrigin.width    ;
-                var vRatio = image.height / canvasOrigin.height  ;
+                var hRatio = canvasOrigin.width  / image.width    ;
+                var vRatio = canvasOrigin.height / image.height  ;
                 var ratio  = Math.min ( hRatio, vRatio );
+                if(ratio>2.5) ratio=ratio / 10
 
                 ctx.drawImage(image, 0, 0,
                     canvasOrigin.width*ratio*3, canvasOrigin.height*ratio*3,
                     10,10,
                     canvasOrigin.width* (canvasOrigin.width > 3000 ? 1 : ratio) /3 , canvasOrigin.height * (canvasOrigin.width > 3000 ? 1 : ratio) /3);
 
-                ctx.font = "36px Comic Sans MS";
+                ctx.font = canvasOrigin.height/15 + "px Comic Sans MS";
                 ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
                 ctx.textAlign = "center";
 
