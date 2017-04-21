@@ -47,6 +47,7 @@
         this._imageLabelSize;
         this._heightOfImage;
         this._listenerDownload;
+        this._requestAnimationFrame;
 
         this._updateImage = updateImage;
         this._drawImage = drawImage;
@@ -72,10 +73,10 @@
         this._removeElementToDom = removeElementToDom;
         this._load_label_img = load_label_img;
         this._destroy = destroy;
+        this._downloadURI = downloadURI;
         this._init();
 
         function init() {
-            this._canvas = this._create_canvas();
             this._elements = {
                 createMainForm: this._createMainForm(),
                 createImagePreviewForm: this._createImagePreviewForm(),
@@ -86,6 +87,7 @@
 
             this._removeElementToDom();
             this._addElementToDom();
+            this._canvas = this._create_canvas();
             this._destroy();
             this._addEventListener();
 
@@ -239,7 +241,6 @@
 
         function create_canvas() {
             var canvas = document.createElement('canvas');
-            //document.body.appendChild(canvas);
 
             return canvas;
         }
@@ -256,12 +257,14 @@
             document.getElementById('imageLabelHor').value = this._imageLabelHor;
             document.getElementById('imageLabelVer').value = this._imageLabelVer;
             document.getElementById('imageLabelsize').value = this._imageLabelSize;
+            document.getElementById('preview').innerHTML = '';
         }
 
         function updateImage(){
             var file    = document.querySelector('input[type=file]').files[0];
             var reader  = new FileReader();
             reader.onloadend = function () {
+                this._requestAnimationFrame = null;
                 this._updateData();
                 this._loadImage(reader.result);
             }.bind(this);
@@ -276,7 +279,6 @@
                 var height = image.height;
                 this._canvas.width = this._widthOfImage = width;
                 this._canvas.height = this._heightOfImage = height;
-
                 this._ctx = this._canvas.getContext('2d');
                 this._ctx.drawImage(image, 0, 0);
                 this._change_size(this._canvas);
@@ -347,10 +349,10 @@
         }
 
         function convertCanvasToImage(canvas) {
-            document.getElementById('preview').innerHTML = '';
-            document.getElementById('preview').appendChild(canvas);
-
-            requestAnimationFrame(this._drawImage.bind(this));
+            if(!document.getElementsByTagName('canvas')[0]){
+                document.getElementById('preview').appendChild(canvas);
+            }
+            this._requestAnimationFrame = requestAnimationFrame(this._drawImage.bind(this));
 
             return ;
         }
@@ -360,25 +362,20 @@
                 resolve(this._canvasWithImage.toDataURL('image/jpeg'));
             }.bind(this))
             test.then(function (url) {
-                    var link = document.createElement("a");
-
-                    link.setAttribute("href", url);
-                    link.setAttribute("download", filename);
-                    link.click();
-                    document.body.appendChild(link)
-
+                    this._downloadURI();
 //                link.href = url.replace("image/png", "image/octet-stream");
 //                link.download = filename;
 //                window.location.href=url.replace("image/png", "image/octet-stream");
-            })
-
-//            downloadURI(link.href , filename)
-
+            }.bind(this))
         }
         function downloadURI(uri, name) {
-            var link = document.createElement('a');
-            link.download = name;
-            link.href = uri;
+            var link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.click();
+            document.body.appendChild(link);
+
+            return link;
         }
         function destroy() {
             this._listenerDownload = null;
