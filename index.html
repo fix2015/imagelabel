@@ -186,7 +186,7 @@
                 LabelText.setAttribute("type", "text");
                 LabelText.setAttribute("id", "labelImage");
                 LabelText.value = 'https://pp.userapi.com/c636019/v636019349/d413/uZilv97vZDM.jpg';
-                LabelText.onkeypress = this._changeLabelImagePosition.bind(this);
+                LabelText.onkeyup = this._changeLabelImagePosition.bind(this);
 
             DivLabelImage.appendChild(this._createLabel('Label Image:'));
             DivLabelImage.appendChild(LabelText);
@@ -198,7 +198,7 @@
                 LabelText.setAttribute("type", "text");
                 LabelText.setAttribute("id", "labelText");
                 LabelText.value = 'https://vk.com/gport';
-                LabelText.onkeypress = this._changeLabelImagePosition.bind(this);
+                LabelText.onkeyup = this._changeLabelImagePosition.bind(this);
 
 
             DivLabelText.appendChild(this._createLabel('Label Text:'));
