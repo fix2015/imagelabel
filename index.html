@@ -356,8 +356,22 @@
         }
 
         function downloadCanvas(link, filename) {
-            link.href = this._canvasWithImage.toDataURL();
-            link.download = filename;
+            var test = new Promise(function (resolve,reject) {
+                resolve(this._canvasWithImage.toDataURL('image/jpeg'));
+            }.bind(this))
+            test.then(function (url) {
+                    var link = document.createElement("a");
+
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", filename);
+                    link.click();
+                    document.body.appendChild(link)
+
+//                link.href = url.replace("image/png", "image/octet-stream");
+//                link.download = filename;
+//                window.location.href=url.replace("image/png", "image/octet-stream");
+            })
+
 //            downloadURI(link.href , filename)
 
         }
@@ -373,7 +387,7 @@
         function addEventListener() {
             var self = this;
             this._listenerDownload = document.getElementById('download').addEventListener('click', function() {
-                self._downloadCanvas(this, 'test.png');
+                self._downloadCanvas(this, 'test.jpeg');
             }, false);
         }
         function changeLabelImagePosition() {
